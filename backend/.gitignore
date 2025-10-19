@@ -1,0 +1,31 @@
+# Dependencies
+/vendor/
+/node_modules/
+
+# Env
+.env
+.env.*.local
+!.env.example
+
+# Laravel runtime
+/storage/*
+!/storage/app/
+!/storage/app/public/
+!/storage/framework/
+!/storage/framework/cache/
+!/storage/framework/sessions/
+!/storage/framework/testing/
+!/storage/framework/views/
+!/storage/logs/
+bootstrap/cache/*
+!bootstrap/cache/.gitignore
+
+# Build
+public/hot
+public/storage
+public/mix-manifest.json
+
+# OS / Editor
+.DS_Store
+.vscode/
+.idea/

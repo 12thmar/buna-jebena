@@ -1,0 +1,17 @@
+# OS / Editor
+.DS_Store
+.vscode/
+.idea/
+
+# Secrets / env
+.env
+.env.*.local
+!.env.example
+
+# Node / Composer (if present at root)
+node_modules/
+vendor/
+
+# Docker cruft
+**/.pytest_cache/
+**/__pycache__/
