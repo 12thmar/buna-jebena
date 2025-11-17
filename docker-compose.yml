@@ -6,7 +6,15 @@ services:
     container_name: bj-app
     env_file: ./docker/.env.docker      # docker-only env (see next step)
     volumes:
+<<<<<<< HEAD
       - ./backend:/var/www/html
+=======
+      - ./backend:/var/www/html:delegated
+      - ./backend/.env:/var/www/html/.env:ro   # << add this explicit bind
+      - vendor-cache:/var/www/html/vendor
+      - storage-cache:/var/www/html/storage
+      - cache-cache:/var/www/html/bootstrap/cache
+>>>>>>> add-contact
     depends_on: [db, redis, mailpit]
     networks: [bj]
 
@@ -39,8 +47,17 @@ services:
 
   mailpit:
     image: axllent/mailpit:latest
+<<<<<<< HEAD
     ports: ["8025:8025","1025:1025"] # [8025]web UI [1025]smtp
     networks: [bj]
 
 volumes: { dbdata: {} }
 networks: { bj: {} }
+=======
+    restart: unless-stopped
+    ports: ["8025:8025","1025:1025"] # [8025]web UI [1025]smtp
+    networks: [bj]
+
+volumes: { dbdata: {},  vendor-cache: {}, storage-cache: {}, cache-cache: {} }
+networks: { bj: {} }
+>>>>>>> add-contact
