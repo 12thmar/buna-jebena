@@ -122,8 +122,6 @@ return [
         'driver' => env('APP_MAINTENANCE_DRIVER', 'file'),
         'store' => env('APP_MAINTENANCE_STORE', 'database'),
     ],
-<<<<<<< HEAD
-=======
     'providers' => [
 
         /*
@@ -165,6 +163,5 @@ return [
         App\Providers\RouteServiceProvider::class,  // 👈 your new provider goes here
     ],
 
->>>>>>> add-contact
 
 ];
