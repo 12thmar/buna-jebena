@@ -1,17 +1,77 @@
-# OS / Editor
-.DS_Store
-.vscode/
-.idea/
-
-# Secrets / env
+# ------------------------------------
+# Laravel
+# ------------------------------------
+/vendor/
+/node_modules/
 .env
-.env.*.local
+.env.*
 !.env.example
+/storage/*.key
+/storage/app/*.php
+/storage/app/public/*
+/storage/framework/cache/data/*
+/storage/framework/sessions/*
+/storage/framework/testing/*
+/storage/logs/*.log
 
-# Node / Composer (if present at root)
-node_modules/
-vendor/
+# ------------------------------------
+# Laravel Cache
+# ------------------------------------
+/bootstrap/cache/*.php
+!/bootstrap/cache/.gitignore
 
-# Docker cruft
-**/.pytest_cache/
-**/__pycache__/
+# ------------------------------------
+# Composer
+# ------------------------------------
+composer.lock
+composer.phar
+
+# ------------------------------------
+# Vite / Node
+# ------------------------------------
+/public/build/
+/public/hot
+/public/mix-manifest.json
+/public/js/*.js
+/public/css/*.css
+
+# ------------------------------------
+# Docker
+# ------------------------------------
+/docker-data/
+/docker-compose.override.yml
+*.pid
+*.sock
+
+# ------------------------------------
+# Logs / Dumps
+# ------------------------------------
+*.log
+*.gz
+*.zip
+*.tar
+*.tar.gz
+*.sql
+*.sqlite3
+
+# ------------------------------------
+# OS / Editor Junk
+# ------------------------------------
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# ------------------------------------
+# GitHub Actions / Deploy Keys
+# ------------------------------------
+*.pem
+*.key
+!deploy.sh
+
+# ------------------------------------
+# Docker build cache
+# ------------------------------------
+.cache/

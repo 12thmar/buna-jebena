@@ -1,0 +1,62 @@
+name: Deploy buna-jebena
+
+on:
+  push:
+    branches:
+      - main   # or prod, whatever you use
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # Optional: run PHP unit tests or linting here
+      - name: Set up PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          coverage: none
+
+      - name: Install dependencies (no dev)
+        run: |
+          composer install --no-dev --no-interaction --prefer-dist --optimize-autoloader
+
+      # You can run tests here if you want
+      # - name: Run tests
+      #   run: php artisan test
+
+      - name: Prepare SSH key
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SSH_KEY }}" > ~/.ssh/id_ed25519
+          chmod 600 ~/.ssh/id_ed25519
+          echo -e "Host prod-server\n  HostName ${{ secrets.SSH_HOST }}\n  User ${{ secrets.SSH_USER }}\n  StrictHostKeyChecking no\n" > ~/.ssh/config
+
+      - name: Deploy to server via SSH
+        run: |
+          ssh prod-server << 'EOF'
+            set -e
+
+            cd /var/www/buna-jebena
+
+            echo "Pulling latest code..."
+            git fetch origin main
+            git reset --hard origin/main
+
+            echo "Pulling and rebuilding containers..."
+            docker compose pull
+            docker compose up -d --build
+
+            echo "Running migrations..."
+            docker compose exec -T app php artisan migrate --force || true
+
+            echo "Clearing and caching config..."
+            docker compose exec -T app php artisan config:clear
+            docker compose exec -T app php artisan route:clear
+            docker compose exec -T app php artisan cache:clear
+
+            echo "Deployment done."
+          EOF
