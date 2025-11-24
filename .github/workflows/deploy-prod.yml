@@ -51,7 +51,7 @@ jobs:
             # 3. If repo does not exist, clone it
             if [ ! -d ".git" ]; then
               echo "First-time setup: cloning repo..."
-              git clone https://github.com/YOUR_USERNAME/buna-jebena.git .
+              git clone https://github.com/12thmar/buna-jebena.git .
             else
               echo "Repo exists: pulling latest changes..."
               git fetch origin main
