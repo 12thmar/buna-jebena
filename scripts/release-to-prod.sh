@@ -1,23 +1,44 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+# 1. Generate today's release name
 TODAY=$(date +%Y-%m-%d)
 BRANCH="release/$TODAY"
 
-echo "Creating / updating $BRANCH and pushing to prod…"
+echo "📦 Creating release: $BRANCH"
 
-# make sure we're up to date
+# 2. Fetch all remote branches
 git fetch origin --prune
+
+# 3. Checkout main and pull latest changes
 git checkout main
 git pull origin main
 
-# create or reset today's release branch from main
+# 4. Create or reset today's release branch
 git checkout -B "$BRANCH"
 
-# push the release branch itself (optional but nice)
+# 5. Push today's release branch
+echo "⬆️  Pushing $BRANCH to origin..."
 git push origin "$BRANCH"
 
-# push today's release to prod branch
+# 6. Push today's release branch to prod
+echo "🚀 Deploying $BRANCH → prod..."
 git push origin "$BRANCH:prod"
 
-echo "Done. Deployed $BRANCH to prod."
+# 7. Cleanup old release branches (local + remote)
+echo "🧹 Cleaning old release branches..."
+
+# List all release branches except today's,
+# delete local and remote versions.
+for OLD in $(git branch -r | grep 'origin/release/' | grep -v "$BRANCH"); do
+    CLEAN=${OLD#origin/}
+    echo "   🔥 Deleting $CLEAN ..."
+
+    # Delete remote branch
+    git push origin --delete "$CLEAN" || true
+
+    # Delete local branch if exists
+    git branch -D "$CLEAN" 2>/dev/null || true
+done
+
+echo "✨ Done. Only $BRANCH kept."
