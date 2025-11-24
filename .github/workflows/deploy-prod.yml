@@ -21,9 +21,9 @@ jobs:
           coverage: none
 
       - name: Install dependencies (no dev)
-        run: |
-          composer install --no-dev --no-interaction --prefer-dist --optimize-autoloader
-
+        working-directory: ./backend
+        run: composer install --no-dev --no-interaction --prefer-dist --optimize-autoloader
+      
       # You can run tests here if you want
       # - name: Run tests
       #   run: php artisan test
