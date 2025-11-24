@@ -3,7 +3,7 @@ name: Deploy buna-jebena
 on:
   push:
     branches:
-      - main   # or prod, whatever you use
+      - prod   # or prod, whatever you use
 
 jobs:
   deploy:
