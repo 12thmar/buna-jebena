@@ -59,11 +59,11 @@ jobs:
             fi
 
             echo "Building containers..."
-            docker compose pull || true
-            docker compose up -d --build
+            docker-compose pull || true
+            docker-compose up -d --build
 
             echo "Running migrations..."
-            docker compose exec -T app php artisan migrate --force || true
+            docker-compose exec -T app php artisan migrate --force || true
 
             echo "Deployment done."
           EOF
