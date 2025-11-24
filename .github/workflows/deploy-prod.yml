@@ -40,23 +40,30 @@ jobs:
           ssh prod-server << 'EOF'
             set -e
 
+            # 1. Create /var/www if missing
+            mkdir -p /var/www
+
+            # 2. Create buna-jebena folder if missing
+            mkdir -p /var/www/buna-jebena
+
             cd /var/www/buna-jebena
 
-            echo "Pulling latest code..."
-            git fetch origin main
-            git reset --hard origin/main
+            # 3. If repo does not exist, clone it
+            if [ ! -d ".git" ]; then
+              echo "First-time setup: cloning repo..."
+              git clone https://github.com/YOUR_USERNAME/buna-jebena.git .
+            else
+              echo "Repo exists: pulling latest changes..."
+              git fetch origin main
+              git reset --hard origin/main
+            fi
 
-            echo "Pulling and rebuilding containers..."
-            docker compose pull
+            echo "Building containers..."
+            docker compose pull || true
             docker compose up -d --build
 
             echo "Running migrations..."
             docker compose exec -T app php artisan migrate --force || true
-
-            echo "Clearing and caching config..."
-            docker compose exec -T app php artisan config:clear
-            docker compose exec -T app php artisan route:clear
-            docker compose exec -T app php artisan cache:clear
 
             echo "Deployment done."
           EOF
