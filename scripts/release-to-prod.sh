@@ -16,7 +16,7 @@ git pull origin prod
 git checkout -B "$BRANCH"
 
 echo "⬆️  Pushing $BRANCH to origin..."
-git push origin "$BRANCH"
+git push origin "$BRANCH" --force
 
 # (Optional) clean up old release branches except today's
 echo "🧹 Cleaning old release branches..."
