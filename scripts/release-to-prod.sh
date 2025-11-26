@@ -41,4 +41,4 @@ for OLD in $(git branch -r | grep 'origin/release/' | grep -v "$BRANCH"); do
     git branch -D "$CLEAN" 2>/dev/null || true
 done
 
-echo "✨ Done. Only $BRANCH kept."
+echo "✨ Done. Only $BRANCH kept.."
