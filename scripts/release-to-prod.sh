@@ -18,8 +18,18 @@ git checkout -B "$BRANCH"
 echo "⬆️  Pushing $BRANCH to origin..."
 git push origin "$BRANCH"
 
-# Deploy prod by pushing it to itself (trigger CI)
+# (Optional) clean up old release branches except today's
+echo "🧹 Cleaning old release branches..."
+for OLD in $(git branch -r | grep 'origin/release/' | grep -v "$BRANCH"); do
+  CLEAN=${OLD#origin/}
+  echo "   🔥 Deleting $CLEAN ..."
+  git push origin --delete "$CLEAN" || true
+  git branch -D "$CLEAN" 2>/dev/null || true
+done
+
+# Push prod to trigger deploy
 echo "🚀 Deploying prod..."
+git checkout prod
 git push origin prod
 
 echo "✨ Done. Prod deployed with CURRENT approved features."
