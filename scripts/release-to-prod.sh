@@ -23,7 +23,7 @@ git push origin "$BRANCH"
 
 # 6. Push today's release branch to prod
 echo "🚀 Deploying $BRANCH → prod..."
-git push origin "$BRANCH:prod"
+git push origin "$BRANCH:prod" --force
 
 # 7. Cleanup old release branches (local + remote)
 echo "🧹 Cleaning old release branches..."
