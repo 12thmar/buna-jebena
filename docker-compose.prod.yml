@@ -1,69 +1,15 @@
-version: "3.9"
-
 services:
-  app:
-    build:
-      context: .
-      dockerfile: docker/Dockerfile
-    container_name: bj-app
-    env_file:
-      # you can keep using this or create a docker/.env.prod
-      - ./docker/.env.docker
-    volumes:
-      # keep using the repo code on the server (simple for now)
-      - ./backend:/var/www/html:delegated
-      # prod .env lives on the server, not in git
-      - ./backend/.env:/var/www/html/.env:ro
-      - vendor-cache:/var/www/html/vendor
-      - storage-cache:/var/www/html/storage
-      - cache-cache:/var/www/html/bootstrap/cache
-    depends_on:
-      - db
-      - redis
-    networks:
-      - bj
-
-  web:
-    image: nginx:1.27-alpine
-    container_name: bj-web
+  nginx:
     ports:
-      # expose HTTP on 80 for the world (behind your EC2 security group)
       - "80:80"
-    volumes:
-      - ./backend:/var/www/html
-      # your nginx config lives in backend/public/nginx.conf
-      - ./backend/public/nginx.conf:/etc/nginx/conf.d/default.conf:ro
-    depends_on:
-      - app
-    networks:
-      - bj
+      - "443:443"
+    restart: always
+
+  app:
+    restart: always
 
   db:
-    image: mysql:8.0
-    container_name: bj-db
-    environment:
-      MYSQL_DATABASE: bj
-      MYSQL_USER: bj
-      MYSQL_PASSWORD: bjpass
-      MYSQL_ROOT_PASSWORD: rootpass
-    # no port mapping in prod – only containers can talk to DB
-    volumes:
-      - dbdata:/var/lib/mysql
-    networks:
-      - bj
+    restart: always
 
   redis:
-    image: redis:7-alpine
-    container_name: bj-redis
-    # no port mapping in prod – only app container needs Redis
-    networks:
-      - bj
-
-volumes:
-  dbdata: {}
-  vendor-cache: {}
-  storage-cache: {}
-  cache-cache: {}
-
-networks:
-  bj: {}
+    restart: always

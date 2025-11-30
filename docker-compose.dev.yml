@@ -1,0 +1,13 @@
+services:
+  nginx:
+    ports:
+      - "8080:80"       # hit http://localhost:8080
+
+  mailpit:
+    image: axllent/mailpit:v1.22
+    restart: unless-stopped
+    ports:
+      - "1025:1025"     # SMTP
+      - "8025:8025"     # Web UI
+    networks:
+      - app-net
