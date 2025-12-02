@@ -2,15 +2,20 @@ version: "3.9"
 
 services:
   app:
+    container_name: bj-app
     build:
       context: .
-      dockerfile: Dockerfile
-    env_file: .env
+      dockerfile: Dockerfile           # your Laravel PHP-FPM Dockerfile
+    working_dir: /var/www/html
+    volumes:
+      - .:/var/www/html
+    env_file:
+      - .env
+    expose:
+      - "9000"                         # PHP-FPM port
     depends_on:
       - db
       - redis
-    networks:
-      - app-net
 
   db:
     image: postgres:16
@@ -33,7 +38,7 @@ services:
     depends_on:
       - app
     volumes:
-      - ./docker/nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./backend/public/nginx.conf:/etc/nginx/nginx.conf:ro
       - .:/var/www/html
     networks:
       - app-net

@@ -85,8 +85,8 @@ jobs:
             fi
 
             echo "Building containers..."
-            docker compose -f docker-compose.yml -f docker-compose.prod.yml pull || true
-            docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d --build --remove-orphans
+            docker-compose -f docker-compose.yml -f docker-compose.prod.yml pull || true
+            docker-compose -f docker-compose.yml -f docker-compose.prod.yml up -d --build --remove-orphans
 
             echo "Running migrations..."
             docker-compose exec -T app php artisan migrate --force || true
