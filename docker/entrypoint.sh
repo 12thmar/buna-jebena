@@ -38,9 +38,9 @@ if [ ! -f vendor/autoload.php ]; then
 fi
 
 # --- ensure .env exists ---
-if [ ! -f .env ] && [ -f .env.example ]; then
+if [ "$APP_ENV" = "local" ] && [ ! -f .env ]; then
+  echo "Local environment detected. Creating .env from .env.example"
   cp .env.example .env
-  echo "[entrypoint] created .env from example"
 fi
 
 # --- app key (only if missing) ---
