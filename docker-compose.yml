@@ -9,8 +9,6 @@ services:
     working_dir: /var/www/html
     volumes:
       - .:/var/www/html
-    env_file:
-      - .env
     expose:
       - "9000"                         # PHP-FPM port
     depends_on:

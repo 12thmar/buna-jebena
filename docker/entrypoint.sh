@@ -37,10 +37,18 @@ if [ ! -f vendor/autoload.php ]; then
   composer install --no-interaction --prefer-dist --no-progress
 fi
 
-# --- ensure .env exists ---
-if [ "$APP_ENV" = "local" ] && [ ! -f .env ]; then
-  echo "Local environment detected. Creating .env from .env.example"
-  cp .env.example .env
+# --- ensure .env exists (LOCAL ONLY) ---
+if [ "${APP_ENV:-local}" = "local" ]; then
+  if [ ! -f .env ]; then
+    echo "[entrypoint] Local environment detected and .env missing — trying to create from .env.example"
+    if cp .env.example .env 2>/dev/null; then
+      echo "[entrypoint] .env created from .env.example (local)"
+    else
+      echo "[entrypoint] WARNING: could not create .env (maybe read-only FS?). Continuing with whatever env is available."
+    fi
+  fi
+else
+  echo "[entrypoint] APP_ENV=${APP_ENV:-local} is not 'local' — not touching .env (prod/similar)."
 fi
 
 # --- app key (only if missing) ---

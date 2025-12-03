@@ -3,6 +3,8 @@ services:
     restart: always
 
   app:
+    env_file:
+      - .env
     restart: always
 
   db:
