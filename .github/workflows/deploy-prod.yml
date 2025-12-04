@@ -23,7 +23,7 @@ jobs:
       - name: Install dependencies (no dev)
         working-directory: ./backend
         run: composer install --no-dev --no-interaction --prefer-dist --optimize-autoloader
-      
+
       # You can run tests here if you want
       # - name: Run tests
       #   run: php artisan test
@@ -40,34 +40,37 @@ jobs:
             StrictHostKeyChecking no
           CONFIG
 
-      # Build the prod .env dynamically from GitHub secrets (on the runner)
+      # ✅ Build prod .env dynamically from GitHub secrets (no heredoc nesting)
       - name: Build prod .env from secrets
         run: |
-          cat > .env.prod << 'EOL'
-APP_ENV=production
-APP_DEBUG=false
-APP_URL=https://api.bunaroots.com
-APP_KEY=${{ secrets.APP_KEY }}
+          {
+            printf '%s\n' "APP_ENV=production"
+            printf '%s\n' "APP_DEBUG=false"
+            printf '%s\n' "APP_URL=https://api.bunaroots.com"
+            printf '%s\n' "APP_KEY=${{ secrets.APP_KEY }}"
+            printf '%s\n' ""
 
-DB_HOST=${{ secrets.DB_HOST }}
-DB_DATABASE=${{ secrets.DB_DATABASE }}
-DB_USERNAME=${{ secrets.DB_USERNAME }}
-DB_PASSWORD=${{ secrets.DB_PASSWORD }}
+            printf '%s\n' "DB_HOST=${{ secrets.DB_HOST }}"
+            printf '%s\n' "DB_DATABASE=${{ secrets.DB_DATABASE }}"
+            printf '%s\n' "DB_USERNAME=${{ secrets.DB_USERNAME }}"
+            printf '%s\n' "DB_PASSWORD=${{ secrets.DB_PASSWORD }}"
+            printf '%s\n' ""
 
-MAIL_MAILER=ses
-AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }}
-AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }}
-SES_REGION=${{ secrets.SES_REGION }}
-MAIL_FROM_ADDRESS=${{ secrets.MAIL_FROM_ADDRESS }}
-MAIL_FROM_NAME=${{ secrets.MAIL_FROM_NAME }}
+            printf '%s\n' "MAIL_MAILER=ses"
+            printf '%s\n' "AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }}"
+            printf '%s\n' "AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }}"
+            printf '%s\n' "SES_REGION=${{ secrets.SES_REGION }}"
+            printf '%s\n' "MAIL_FROM_ADDRESS=${{ secrets.MAIL_FROM_ADDRESS }}"
+            printf '%s\n' "MAIL_FROM_NAME=${{ secrets.MAIL_FROM_NAME }}"
+            printf '%s\n' ""
 
-CACHE_DRIVER=redis
-SESSION_DRIVER=redis
-QUEUE_CONNECTION=redis
-REDIS_HOST=redis
-REDIS_PASSWORD=
-REDIS_PORT=6379
-EOL
+            printf '%s\n' "CACHE_DRIVER=redis"
+            printf '%s\n' "SESSION_DRIVER=redis"
+            printf '%s\n' "QUEUE_CONNECTION=redis"
+            printf '%s\n' "REDIS_HOST=redis"
+            printf '%s\n' "REDIS_PASSWORD="
+            printf '%s\n' "REDIS_PORT=6379"
+          } > .env.prod
 
       # Copy .env to the server
       - name: Copy .env to server
