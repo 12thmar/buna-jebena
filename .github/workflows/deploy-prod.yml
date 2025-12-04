@@ -82,8 +82,27 @@ jobs:
         run: |
           ssh prod-server << 'EOF'
             set -e
-            cd /var/www/buna-jebena
+            cd /var/www
 
+            if [ ! -d "buna-jebena/.git" ]; then
+              echo "First-time setup: cloning repo..."
+              git clone https://github.com/12thmar/buna-jebena.git buna-jebena
+              cd buna-jebena
+              # If default branch is main, switch to prod
+              git checkout prod || echo "Branch 'prod' already default or not needed"
+            else
+              echo "Repo exists: pulling latest changes..."
+              cd buna-jebena
+            fi
+
+            # Make Git happy with directory ownership
+            git config --global --add safe.directory /var/www/buna-jebena
+
+            echo "Updating repo to latest prod..."
+            git fetch origin prod
+            git reset --hard origin/prod
+
+            echo "Deploying containers..."
             docker-compose -f docker-compose.yml -f docker-compose.prod.yml pull
             docker-compose -f docker-compose.yml -f docker-compose.prod.yml up -d --build --remove-orphans
           EOF
