@@ -1,12 +1,18 @@
 .git
 .gitignore
-vendor
+.env
+.env.*
+docker-compose.yml
+docker-compose.prod.yml
+docker-compose.dev.yml
 node_modules
+vendor
+scripts
+public/storage
 storage/logs/*
 storage/framework/cache/*
 storage/framework/sessions/*
 storage/framework/views/*
-.env
-docker-compose.yml
+storage/*.key
 public/nginx.conf
 

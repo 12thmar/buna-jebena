@@ -13,7 +13,7 @@ COPY backend/composer.json composer.lock* ./
 RUN composer install --no-dev --no-interaction --prefer-dist --no-progress || true
 
 # App code
-COPY . .
+COPY backend/ ./
 
 # our entrypoint
 COPY docker/entrypoint.sh /usr/local/bin/entrypoint.sh
