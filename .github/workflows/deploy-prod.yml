@@ -3,7 +3,7 @@ name: Deploy buna-jebena
 on:
   push:
     branches:
-      - prod   # or prod, whatever you use
+      - prod   # deploy when pushing to prod
 
 jobs:
   deploy:
@@ -33,42 +33,54 @@ jobs:
           mkdir -p ~/.ssh
           echo "${{ secrets.SSH_KEY }}" > ~/.ssh/id_ed25519
           chmod 600 ~/.ssh/id_ed25519
-          echo -e "Host prod-server\n  HostName ${{ secrets.SSH_HOST }}\n  User ${{ secrets.SSH_USER }}\n  StrictHostKeyChecking no\n" > ~/.ssh/config
-          
+          cat <<CONFIG > ~/.ssh/config
+          Host prod-server
+            HostName ${{ secrets.SSH_HOST }}
+            User ${{ secrets.SSH_USER }}
+            StrictHostKeyChecking no
+          CONFIG
+
+      # Build the prod .env dynamically from GitHub secrets (on the runner)
+      - name: Build prod .env from secrets
+        run: |
+          cat > .env.prod << 'EOL'
+APP_ENV=production
+APP_DEBUG=false
+APP_URL=https://api.bunaroots.com
+APP_KEY=${{ secrets.APP_KEY }}
+
+DB_HOST=${{ secrets.DB_HOST }}
+DB_DATABASE=${{ secrets.DB_DATABASE }}
+DB_USERNAME=${{ secrets.DB_USERNAME }}
+DB_PASSWORD=${{ secrets.DB_PASSWORD }}
+
+MAIL_MAILER=ses
+AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }}
+AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }}
+SES_REGION=${{ secrets.SES_REGION }}
+MAIL_FROM_ADDRESS=${{ secrets.MAIL_FROM_ADDRESS }}
+MAIL_FROM_NAME=${{ secrets.MAIL_FROM_NAME }}
+
+CACHE_DRIVER=redis
+SESSION_DRIVER=redis
+QUEUE_CONNECTION=redis
+REDIS_HOST=redis
+REDIS_PASSWORD=
+REDIS_PORT=6379
+EOL
+
+      # Copy .env to the server
+      - name: Copy .env to server
+        run: |
+          scp .env.prod prod-server:/var/www/buna-jebena/.env
+
+      # Deploy on the server
       - name: Deploy to server via SSH
         run: |
           ssh prod-server << 'EOF'
             set -e
             cd /var/www/buna-jebena
 
-            # 1. Create .env from CI variables
-            cat > .env << 'EOL'
-            APP_ENV=production
-            APP_DEBUG=false
-            APP_URL=https://api.bunaroots.com
-            APP_KEY=${{ secrets.APP_KEY }}
-
-            DB_HOST=${{ secrets.DB_HOST }}
-            DB_DATABASE=${{ secrets.DB_DATABASE }}
-            DB_USERNAME=${{ secrets.DB_USERNAME }}
-            DB_PASSWORD=${{ secrets.DB_PASSWORD }}
-
-            MAIL_MAILER=ses
-            AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }}
-            AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }}
-            SES_REGION=${{ secrets.SES_REGION }}
-            MAIL_FROM_ADDRESS=${{ secrets.MAIL_FROM_ADDRESS }}
-            MAIL_FROM_NAME=${{ secrets.MAIL_FROM_NAME }}
-
-            CACHE_DRIVER=redis
-            SESSION_DRIVER=redis
-            QUEUE_CONNECTION=redis
-            REDIS_HOST=redis
-            REDIS_PASSWORD=
-            REDIS_PORT=6379
-            EOL
-
-            # 2. Deploy containers
             docker-compose -f docker-compose.yml -f docker-compose.prod.yml pull
             docker-compose -f docker-compose.yml -f docker-compose.prod.yml up -d --build --remove-orphans
           EOF
