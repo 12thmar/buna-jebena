@@ -39,57 +39,36 @@ jobs:
         run: |
           ssh prod-server << 'EOF'
             set -e
-            # 1. Create .env from CI variables
-            cat > .env <<EOL
-APP_ENV=production
-APP_DEBUG=false
-APP_URL=https://api.bunaroots.com
-APP_KEY=$APP_KEY
-
-DB_HOST=${{ secrets.DB_HOST }}
-DB_DATABASE=${{ secrets.DB_DATABASE }}
-DB_USERNAME=${{ secrets.DB_USERNAME }}
-DB_PASSWORD=${{ secrets.DB_PASSWORD }}
-
-MAIL_MAILER=ses
-AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }}
-AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }}
-SES_REGION=${{ secrets.SES_REGION }}
-MAIL_FROM_ADDRESS=${{ secrets.MAIL_FROM_ADDRESS }}
-MAIL_FROM_NAME=${{ secrets.MAIL_FROM_NAME }}
-
-CACHE_DRIVER=redis
-SESSION_DRIVER=redis
-QUEUE_CONNECTION=redis
-REDIS_HOST=redis
-REDIS_PASSWORD=
-REDIS_PORT=6379
-EOL
-
-            # 2. Create /var/www if missing
-            mkdir -p /var/www
-
-            # 3. Create buna-jebena folder if missing
-            mkdir -p /var/www/buna-jebena
-
             cd /var/www/buna-jebena
 
-            # 4. If repo does not exist, clone it
-            if [ ! -d ".git" ]; then
-              echo "First-time setup: cloning repo..."
-              git clone https://github.com/12thmar/buna-jebena.git .r
-            else
-              echo "Repo exists: pulling latest changes..."
-              git fetch origin main
-              git reset --hard origin/main
-            fi
+            # 1. Create .env from CI variables
+            cat > .env << 'EOL'
+      APP_ENV=production
+      APP_DEBUG=false
+      APP_URL=https://api.bunaroots.com
+      APP_KEY=${{ secrets.APP_KEY }}
 
-            echo "Building containers..."
-            docker-compose -f docker-compose.yml -f docker-compose.prod.yml pull || true
+      DB_HOST=${{ secrets.DB_HOST }}
+      DB_DATABASE=${{ secrets.DB_DATABASE }}
+      DB_USERNAME=${{ secrets.DB_USERNAME }}
+      DB_PASSWORD=${{ secrets.DB_PASSWORD }}
+
+      MAIL_MAILER=ses
+      AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      SES_REGION=${{ secrets.SES_REGION }}
+      MAIL_FROM_ADDRESS=${{ secrets.MAIL_FROM_ADDRESS }}
+      MAIL_FROM_NAME=${{ secrets.MAIL_FROM_NAME }}
+
+      CACHE_DRIVER=redis
+      SESSION_DRIVER=redis
+      QUEUE_CONNECTION=redis
+      REDIS_HOST=redis
+      REDIS_PASSWORD=
+      REDIS_PORT=6379
+      EOL
+
+            # 2. Deploy containers
+            docker-compose -f docker-compose.yml -f docker-compose.prod.yml pull
             docker-compose -f docker-compose.yml -f docker-compose.prod.yml up -d --build --remove-orphans
-
-            echo "Running migrations..."
-            docker-compose exec -T app php artisan migrate --force || true
-
-            echo "Deployment done."
           EOF
