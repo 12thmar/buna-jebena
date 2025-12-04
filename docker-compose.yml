@@ -5,7 +5,7 @@ services:
     container_name: bj-app
     build:
       context: .
-      dockerfile: Dockerfile           # your Laravel PHP-FPM Dockerfile
+      dockerfile: docker/Dockerfile           # your Laravel PHP-FPM Dockerfile
     working_dir: /var/www/html
     volumes:
       - .:/var/www/html
@@ -24,7 +24,7 @@ services:
       - "80:80"
     volumes:
       - ./backend/public:/var/www/html/public:ro
-      - ./docker/nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
+      - ./backend/public/nginx.conf:/etc/nginx/conf.d/default.conf:ro
 
   db:
     image: postgres:16
