@@ -4,18 +4,18 @@ services:
   app:
     container_name: bj-app
     build:
-      context: .
-      dockerfile: docker/Dockerfile           # your Laravel PHP-FPM Dockerfile
+      context: .                 # 👈 repo root
+      dockerfile: docker/Dockerfile   # 👈 path to your real Dockerfile
     working_dir: /var/www/html
-    volumes:
-      - .:/var/www/html
     expose:
-      - "9000"                         # PHP-FPM port
+      - "9000"
     depends_on:
       - db
       - redis
+    volumes:
+      - .:/var/www/html          # (dev only; overridden in prod)
     networks:
-      - app-net 
+      - app-net
   
   web:
     image: nginx:1.27-alpine
