@@ -10,17 +10,30 @@ if ! command -v composer >/dev/null 2>&1; then
 fi
 export COMPOSER_ALLOW_SUPERUSER=1
 
-# --- wait for MySQL (no mysql client needed) ---
-echo "[entrypoint] waiting for DB ${DB_HOST:-db}:${DB_PORT:-3306} ..."
+# --- wait for Postgres (no mysql client needed) ---
+echo "[entrypoint] waiting for DB ${DB_HOST:-db}:${DB_PORT:-5432} ..."
 tries=0
 until php -r '
-$h=getenv("DB_HOST") ?: "db";
-$p=(int)(getenv("DB_PORT") ?: 3306);
-$u=getenv("DB_USERNAME") ?: "bj";
-$pw=getenv("DB_PASSWORD") ?: "bjpass";
-$d=getenv("DB_DATABASE") ?: "bj";
-try { new PDO("mysql:host=$h;port=$p;dbname=$d;charset=utf8mb4",$u,$pw,[PDO::ATTR_TIMEOUT=>2]); exit(0); }
-catch(Throwable $e){ fwrite(STDERR, "DB not ready: ".$e->getMessage()."\n"); exit(1); }'
+$driver = getenv("DB_CONNECTION") ?: "pgsql";
+$h = getenv("DB_HOST") ?: "db";
+$p = (int)(getenv("DB_PORT") ?: ($driver === "mysql" ? 3306 : 5432));
+$u = getenv("DB_USERNAME") ?: "buna";
+$pw = getenv("DB_PASSWORD") ?: "secret";
+$d = getenv("DB_DATABASE") ?: "buna";
+
+try {
+    if ($driver === "mysql") {
+        $dsn = "mysql:host=$h;port=$p;dbname=$d;charset=utf8mb4";
+    } else {
+        $dsn = "pgsql:host=$h;port=$p;dbname=$d";
+    }
+    new PDO($dsn, $u, $pw, [PDO::ATTR_TIMEOUT => 2]);
+    exit(0);
+} catch (Throwable $e) {
+    fwrite(STDERR, "DB not ready: " . $e->getMessage() . PHP_EOL);
+    exit(1);
+}
+'
 do
   tries=$((tries+1))
   if [ $tries -ge 30 ]; then

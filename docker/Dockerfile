@@ -1,9 +1,9 @@
 FROM php:8.3-fpm-alpine
 
 RUN apk add --no-cache bash git unzip icu-dev libzip-dev oniguruma-dev \
-  && docker-php-ext-install intl pdo pdo_mysql zip \
+  && docker-php-ext-install intl pdo zip pdo_pgsql \
   && docker-php-ext-enable opcache
-
+  
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
 WORKDIR /var/www/html
