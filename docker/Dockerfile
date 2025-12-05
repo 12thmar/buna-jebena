@@ -1,9 +1,18 @@
-FROM php:8.3-fpm-alpine
+FROM php:8.3-fpm
 
-RUN apk add --no-cache bash git unzip icu-dev libzip-dev oniguruma-dev \
-  && docker-php-ext-install intl pdo zip pdo_pgsql \
-  && docker-php-ext-enable opcache
-  
+WORKDIR /var/www/html
+
+RUN apt-get update && apt-get install -y \
+      git \
+      unzip \
+      libicu-dev \
+      libzip-dev \
+      libonig-dev \
+      libpq-dev \
+    && docker-php-ext-install intl pdo zip pdo_pgsql \
+    && docker-php-ext-enable opcache \
+    && rm -rf /var/lib/apt/lists/*
+
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
 WORKDIR /var/www/html
