@@ -7,8 +7,6 @@ services:
       context: .                 # 👈 repo root
       dockerfile: docker/Dockerfile   # 👈 path to your real Dockerfile
     working_dir: /var/www/html
-    env_file:
-      - ./backend/.env
     expose:
       - "9000"
     depends_on:
