@@ -2,19 +2,26 @@
 # Laravel
 # ------------------------------------
 /vendor/
-/node_modules/
+backend/vendor/
+backend/node_modules/
 .env
 .env.*
 !.env.example
 backend/.env
 backend/.env.*
-/storage/*.key
-/storage/app/*.php
-/storage/app/public/*
-/storage/framework/cache/data/*
-/storage/framework/sessions/*
-/storage/framework/testing/*
-/storage/logs/*.log
+
+
+# Ignore all of backend/storage by default
+backend/storage/*
+
+# Allow specific subdirectories (but not their contents by default)
+!backend/storage/app/
+!backend/storage/app/public/
+!backend/storage/framework/
+!backend/storage/framework/cache/
+!backend/storage/framework/testing/
+!backend/storage/framework/views/
+!backend/storage/logs/
 
 # ------------------------------------
 # Laravel Cache
