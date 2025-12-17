@@ -17,7 +17,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      # Optional local build checks (kept from your workflow)
+      # Optional the local build checks (kept from your workflow)
       - name: Set up PHP
         uses: shivammathur/setup-php@v2
         with:
