@@ -36,11 +36,11 @@ jobs:
         uses: aws-actions/configure-aws-credentials@v4
         with:
           role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME }}
-          aws-region: ${{ secrets.AWS_REGION }}
+          aws-region: us-east-1
 
       - name: Deploy to EC2 via SSM (no SSH)
         env:
-          AWS_REGION: ${{ secrets.AWS_REGION }}
+          AWS_REGION: us-east-1
           INSTANCE_ID: ${{ secrets.EC2_INSTANCE_ID }}
 
           APP_KEY: ${{ secrets.APP_KEY }}
