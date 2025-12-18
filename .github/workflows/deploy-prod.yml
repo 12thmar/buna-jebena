@@ -43,7 +43,7 @@ jobs:
 
       - name: Deploy to EC2 via SSM (no SSH)
         env:
-          AWS_REGION: us-east-1
+          AWS_REGION: ${{ secrets.AWS_REGION }}
           INSTANCE_ID: ${{ secrets.EC2_INSTANCE_ID }}
 
           APP_KEY: ${{ secrets.APP_KEY }}
@@ -53,46 +53,44 @@ jobs:
           DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
 
           SES_REGION: ${{ secrets.SES_REGION }}
-
           MAIL_FROM_ADDRESS: ${{ secrets.MAIL_FROM_ADDRESS }}
           MAIL_FROM_NAME: ${{ secrets.MAIL_FROM_NAME }}
           CORS_ALLOWED_ORIGINS: ${{ secrets.CORS_ALLOWED_ORIGINS }}
         run: |
           set -euo pipefail
 
-          # Build the .env content here in GitHub, then send it to the server via SSM.
+          # Build the .env text locally (GitHub runner)
           ENV_FILE_CONTENT=$(cat <<EOF
-          APP_ENV=production
-          APP_DEBUG=false
-          APP_URL=https://api.bunaroots.com
-          APP_KEY=${APP_KEY}
+      APP_ENV=production
+      APP_DEBUG=false
+      APP_URL=https://api.bunaroots.com
+      APP_KEY=${APP_KEY}
 
-          DB_HOST=${DB_HOST}
-          DB_DATABASE=${DB_DATABASE}
-          DB_USERNAME=${DB_USERNAME}
-          DB_PASSWORD=${DB_PASSWORD}
+      DB_HOST=${DB_HOST}
+      DB_DATABASE=${DB_DATABASE}
+      DB_USERNAME=${DB_USERNAME}
+      DB_PASSWORD=${DB_PASSWORD}
 
-          MAIL_MAILER=ses
-          AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          SES_REGION=${SES_REGION}
-          MAIL_FROM_ADDRESS=${MAIL_FROM_ADDRESS}
-          MAIL_FROM_NAME=${MAIL_FROM_NAME}
-          CORS_ALLOWED_ORIGINS=${CORS_ALLOWED_ORIGINS}
+      MAIL_MAILER=ses
+      AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      SES_REGION=${SES_REGION}
+      MAIL_FROM_ADDRESS=${MAIL_FROM_ADDRESS}
+      MAIL_FROM_NAME=${MAIL_FROM_NAME}
+      CORS_ALLOWED_ORIGINS=${CORS_ALLOWED_ORIGINS}
 
-          CACHE_DRIVER=redis
-          SESSION_DRIVER=redis
-          QUEUE_CONNECTION=redis
-          REDIS_HOST=redis
-          REDIS_PASSWORD=
-          REDIS_PORT=6379
-          EOF
-          )
+      CACHE_DRIVER=redis
+      SESSION_DRIVER=redis
+      QUEUE_CONNECTION=redis
+      REDIS_HOST=redis
+      REDIS_PASSWORD=
+      REDIS_PORT=6379
+      EOF
+      )
 
-          # Send a single SSM command that:
-          # 1) writes /var/www/buna-jebena/.env
-          # 2) pulls latest prod
-          # 3) restarts containers
+          # Base64 encode so we can safely transmit via SSM
+          ENV_B64=$(printf "%s" "$ENV_FILE_CONTENT" | base64 -w 0)
+
           COMMAND_ID=$(aws ssm send-command \
             --region "$AWS_REGION" \
             --document-name "AWS-RunShellScript" \
@@ -101,21 +99,21 @@ jobs:
             --parameters commands="[
               \"set -euo pipefail\",
               \"sudo mkdir -p /var/www/buna-jebena\",
-              \"sudo bash -lc 'cat > /var/www/buna-jebena/.env <<\\\"ENV\\\"\\n${ENV_FILE_CONTENT}\\nENV'\",
+              \"echo ${ENV_B64} | base64 -d | sudo tee /var/www/buna-jebena/.env > /dev/null\",
               \"cd /var/www\",
               \"if [ ! -d buna-jebena/.git ]; then sudo git clone https://github.com/12thmar/buna-jebena.git buna-jebena; fi\",
               \"cd buna-jebena\",
               \"sudo git config --global --add safe.directory /var/www/buna-jebena\",
               \"sudo git fetch origin prod\",
               \"sudo git reset --hard origin/prod\",
-              \"sudo docker compose -f docker-compose.yml -f docker-compose.prod.yml pull\",
-              \"sudo docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d --build --remove-orphans\"
+              \"sudo docker-compose -f docker-compose.yml -f docker-compose.prod.yml pull\",
+              \"sudo docker-compose -f docker-compose.yml -f docker-compose.prod.yml up -d --build --remove-orphans\"
             ]" \
             --query "Command.CommandId" \
             --output text)
 
           echo "SSM CommandId: $COMMAND_ID"
-          
+
           set +e
           aws ssm wait command-executed \
             --region "$AWS_REGION" \
@@ -128,7 +126,7 @@ jobs:
             --region "$AWS_REGION" \
             --command-id "$COMMAND_ID" \
             --instance-id "$INSTANCE_ID" \
-            --query '{Status:Status,StdOut:StandardOutputContent,StdErr:StandardErrorContent}' \
+            --query '{Status:Status,ResponseCode:ResponseCode,StdOut:StandardOutputContent,StdErr:StandardErrorContent}' \
             --output json
-            
+
           exit $WAIT_RC
