@@ -43,6 +43,7 @@ jobs:
           APP_KEY: ${{ secrets.APP_KEY }}
           DB_HOST: ${{ secrets.DB_HOST }}
           DB_DATABASE: ${{ secrets.DB_DATABASE }}
+          DB_PORT: ${{ secrets.DB_PORT }}
           DB_USERNAME: ${{ secrets.DB_USERNAME }}
           DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
 
@@ -64,6 +65,7 @@ jobs:
           ENV_FILE_CONTENT+="APP_KEY=${APP_KEY}"$'\n\n'
 
           ENV_FILE_CONTENT+="DB_HOST=${DB_HOST}"$'\n'
+          ENV_FILE_CONTENT+="DB_PORT=${DB_PORT}"$'\n'
           ENV_FILE_CONTENT+="DB_DATABASE=${DB_DATABASE}"$'\n'
           ENV_FILE_CONTENT+="DB_USERNAME=${DB_USERNAME}"$'\n'
           ENV_FILE_CONTENT+="DB_PASSWORD=${DB_PASSWORD}"$'\n\n'

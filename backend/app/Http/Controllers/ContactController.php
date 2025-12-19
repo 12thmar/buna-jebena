@@ -23,7 +23,7 @@ class ContactController extends Controller
 
         try {
             Mail::raw($body, function ($m) use ($v) {
-                $m->to(env('MAIL_TO_ADDRESS', 'support@bunaroots.local'))
+                $m->to(env('MAIL_TO_ADDRESS', 'info@bunaroots.com'))
                   ->subject($v['subject'] ?? 'New Contact Message');
             });
 
