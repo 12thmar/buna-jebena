@@ -1,7 +1,7 @@
 services:
   app:
     env_file:
-      - .env          # injected from GitHub Action
+      - ./backend/.env          # injected from GitHub Action
     volumes: []       # disable bind mount
     restart: always
 
