@@ -12,6 +12,7 @@ class ContactController extends Controller
         $v = $request->validate([
             'name'    => 'required|string|max:120',
             'email'   => 'required|email',
+            'mobile' => 'nullable|string|max:160',
             'subject' => 'nullable|string|max:160',
             'message' => 'required|string|max:5000',
             'category'=> 'nullable|string|max:80',
@@ -19,6 +20,7 @@ class ContactController extends Controller
 
         $body = "From: {$v['name']} <{$v['email']}>\n"
               . "Category: " . ($v['category'] ?? 'N/A') . "\n\n"
+              . "Mobile Phone: " . ($v['mobile'] ?? 'N/A') . "\n\n"
               . $v['message'];
 
         try {
