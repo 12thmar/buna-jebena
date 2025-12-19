@@ -96,7 +96,7 @@ jobs:
             --parameters commands="[
               \"set -euo pipefail\",
               \"sudo mkdir -p /var/www/buna-jebena\",
-              \"echo ${ENV_B64} | base64 -d | sudo tee /var/www/buna-jebena/.env > /dev/null\",
+              \"echo ${ENV_B64} | base64 -d | sudo tee /var/www/buna-jebena/backend/.env > /dev/null\",
               \"cd /var/www\",
               \"if [ ! -d buna-jebena/.git ]; then sudo git clone https://github.com/12thmar/buna-jebena.git buna-jebena; fi\",
               \"cd buna-jebena\",
