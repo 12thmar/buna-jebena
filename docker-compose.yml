@@ -33,9 +33,9 @@ services:
   db:
     image: postgres:16
     environment:
-      POSTGRES_DB: buna
-      POSTGRES_USER: buna
-      POSTGRES_PASSWORD: secret
+      POSTGRES_DB: ${DB_DATABASE}
+      POSTGRES_USER: ${DB_USERNAME}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
     volumes:
       - db_data:/var/lib/postgresql/data
     networks:
