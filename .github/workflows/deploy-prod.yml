@@ -51,6 +51,14 @@ jobs:
           SES_REGION: ${{ secrets.SES_REGION }}
           MAIL_FROM_ADDRESS: ${{ secrets.MAIL_FROM_ADDRESS }}
           MAIL_FROM_NAME: ${{ secrets.MAIL_FROM_NAME }}
+
+          MAIL_MAILER: ${{ secrets.MAIL_MAILER }}
+          MAIL_HOST: ${{ secrets.MAIL_HOST }}
+          MAIL_PORT: ${{ secrets.MAIL_PORT }}
+          MAIL_ENCRYPTION: ${{ secrets.MAIL_ENCRYPTION }}
+          MAIL_USERNAME: ${{ secrets.MAIL_USERNAME }}
+          MAIL_PASSWORD: ${{ secrets.MAIL_PASSWORD }}
+
           CORS_ALLOWED_ORIGINS: ${{ secrets.CORS_ALLOWED_ORIGINS }}
 
           SES_AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
@@ -71,13 +79,19 @@ jobs:
           ENV_FILE_CONTENT+="DB_USERNAME=${DB_USERNAME}"$'\n'
           ENV_FILE_CONTENT+="DB_PASSWORD=${DB_PASSWORD}"$'\n\n'
 
-          ENV_FILE_CONTENT+=$'MAIL_MAILER=ses\n'
           ENV_FILE_CONTENT+="AWS_ACCESS_KEY_ID=${SES_AWS_ACCESS_KEY_ID}"$'\n'
           ENV_FILE_CONTENT+="AWS_SECRET_ACCESS_KEY=${SES_AWS_SECRET_ACCESS_KEY}"$'\n'
           ENV_FILE_CONTENT+="SES_REGION=${SES_REGION}"$'\n'
           ENV_FILE_CONTENT+="MAIL_FROM_ADDRESS=${MAIL_FROM_ADDRESS}"$'\n'
           ENV_FILE_CONTENT+="MAIL_FROM_NAME=${MAIL_FROM_NAME}"$'\n'
           ENV_FILE_CONTENT+="CORS_ALLOWED_ORIGINS=${CORS_ALLOWED_ORIGINS}"$'\n\n'
+
+          ENV_FILE_CONTENT+="MAIL_MAILER=${MAIL_MAILER}"$'\n'
+          ENV_FILE_CONTENT+="MAIL_HOST=${MAIL_HOST}"$'\n'
+          ENV_FILE_CONTENT+="MAIL_PORT=${MAIL_PORT}"$'\n'
+          ENV_FILE_CONTENT+="MAIL_ENCRYPTION=${MAIL_ENCRYPTION}"$'\n'
+          ENV_FILE_CONTENT+="MAIL_USERNAME=${MAIL_USERNAME}"$'\n'
+          ENV_FILE_CONTENT+="MAIL_PASSWORD=${MAIL_PASSWORD}"$'\n\n'
 
           ENV_FILE_CONTENT+=$'CACHE_DRIVER=redis\n'
           ENV_FILE_CONTENT+=$'SESSION_DRIVER=redis\n'
