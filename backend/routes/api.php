@@ -7,7 +7,8 @@ use App\Http\Controllers\ContactController;
 
 Route::get('/health', fn () => response()->json(['ok' => true]));
 
-Route::post('/contact', [ContactController::class, 'send']);
+Route::post('/contact', [ContactController::class, 'send'])
+    ->middleware('throttle:5,1'); // 5 emails per minute per IP
 /*
 //TEMP: simplest contact endpoint to confirm no 500s
 Route::post('/contact', function () {
