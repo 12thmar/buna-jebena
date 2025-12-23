@@ -35,4 +35,8 @@ return [
         ],
     ],
 
+    'smoke' => [
+         'token' => env('SMOKE_TEST_TOKEN'),
+         'email_to' => env('SMOKE_TEST_EMAIL', 'info@bunaroots.com'),
+    ],
 ];

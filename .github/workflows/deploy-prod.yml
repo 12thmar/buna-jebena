@@ -141,3 +141,19 @@ jobs:
             --output json
 
           exit $WAIT_RC
+
+      - name: API email smoke-test
+        env:
+          API_BASE: https://api.bunaroots.com
+          SMOKE_TEST_TOKEN: ${{ secrets.SMOKE_TEST_TOKEN }}
+        run: |
+          set -euo pipefail
+          echo "Calling smoke email endpoint..."
+          resp=$(curl -sS -i -X POST "$API_BASE/api/smoke/email" \
+            -H "Accept: application/json" \
+            -H "Content-Type: application/json" \
+            -H "X-Smoke-Test-Token: $SMOKE_TEST_TOKEN" \
+            --data '{}' )
+          echo "$resp"
+          status=$(echo "$resp" | awk '/^HTTP/{print $2}' | tail -1)
+          [ "$status" = "200" ] || { echo "::error::Smoke email failed with status $status"; exit 1; }
