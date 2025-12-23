@@ -41,6 +41,9 @@ jobs:
           AWS_REGION: us-east-1
           INSTANCE_ID: ${{ secrets.EC2_INSTANCE_ID }}
 
+          CACHE_STORE: ${{ secrets.CACHE_STORE }}
+          CACHE_DRIVER: ${{ secrets.CACHE_DRIVER }}
+
           APP_KEY: ${{ secrets.APP_KEY }}
           DB_HOST: ${{ secrets.DB_HOST }}
           DB_DATABASE: ${{ secrets.DB_DATABASE }}
@@ -77,6 +80,9 @@ jobs:
           ENV_FILE_CONTENT+=$'APP_DEBUG=false\n'
           ENV_FILE_CONTENT+=$'APP_URL=https://api.bunaroots.com\n'
           ENV_FILE_CONTENT+="APP_KEY=${APP_KEY}"$'\n\n'
+
+          ENV_FILE_CONTENT+="CACHE_STORE=${CACHE_STORE}"$'\n\n'
+          ENV_FILE_CONTENT+="CACHE_DRIVER=${CACHE_DRIVER}"$'\n\n'
 
           ENV_FILE_CONTENT+="DB_HOST=${DB_HOST}"$'\n'
           ENV_FILE_CONTENT+="DB_PORT=${DB_PORT}"$'\n'
