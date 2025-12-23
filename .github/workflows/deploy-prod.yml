@@ -149,11 +149,25 @@ jobs:
         run: |
           set -euo pipefail
           echo "Calling smoke email endpoint..."
-          resp=$(curl -sS -i -X POST "$API_BASE/api/smoke/email" \
+
+          url="$API_BASE/api/smoke/email"
+
+          # Write body to a file, capture status code separately (avoids dumping headers incl. token)
+          http_code="$(curl -sS -X POST "$url" \
             -H "Accept: application/json" \
             -H "Content-Type: application/json" \
             -H "X-Smoke-Test-Token: $SMOKE_TEST_TOKEN" \
-            --data '{}' )
-          echo "$resp"
-          status=$(echo "$resp" | awk '/^HTTP/{print $2}' | tail -1)
-          [ "$status" = "200" ] || { echo "::error::Smoke email failed with status $status"; exit 1; }
+            --data '{}' \
+            -o /tmp/smoke_email_body.json \
+            -w '%{http_code}')"
+
+          echo "HTTP $http_code"
+          if [ "$http_code" != "200" ]; then
+            echo "::error::Smoke email failed with status $http_code"
+            echo "Response body:"
+            cat /tmp/smoke_email_body.json || true
+            exit 1
+          fi
+
+          echo "Response body:"
+          cat /tmp/smoke_email_body.json
