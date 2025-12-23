@@ -1,48 +1,56 @@
 # ------------------------------------
-# Laravel
+# Laravel / Backend
 # ------------------------------------
 /vendor/
 backend/vendor/
 backend/node_modules/
+
+# Env files
 .env
 .env.*
 !.env.example
 backend/.env
 backend/.env.*
-
-
-# Ignore all of backend/storage by default
-backend/storage/*
-
-# Allow specific subdirectories (but not their contents by default)
-!backend/storage/app/
-!backend/storage/app/public/
-!backend/storage/framework/
-!backend/storage/framework/cache/
-!backend/storage/framework/testing/
-!backend/storage/framework/views/
-!backend/storage/logs/
+!backend/.env.example
 
 # ------------------------------------
-# Laravel Cache
+# Laravel storage (keep dirs, ignore contents)
 # ------------------------------------
-/bootstrap/cache/*.php
-!/bootstrap/cache/.gitignore
+backend/storage/**/*
+!backend/storage/.gitignore
+
+# keep these folders in repo (but ignore their contents)
+!backend/storage/app/.gitignore
+!backend/storage/app/public/.gitignore
+!backend/storage/framework/.gitignore
+!backend/storage/framework/cache/.gitignore
+!backend/storage/framework/sessions/.gitignore
+!backend/storage/framework/views/.gitignore
+!backend/storage/framework/testing/.gitignore
+!backend/storage/logs/.gitignore
+
+# If you DO want to commit storage/app/public (usually you don't), uncomment:
+# !backend/storage/app/public/**
+
+# ------------------------------------
+# Laravel bootstrap cache
+# ------------------------------------
+backend/bootstrap/cache/*.php
+!backend/bootstrap/cache/.gitignore
 
 # ------------------------------------
 # Composer
 # ------------------------------------
-composer.lock
 composer.phar
+# (Usually commit composer.lock for apps; ignore only if you intentionally don't want it)
+# composer.lock
 
 # ------------------------------------
-# Vite / Node
+# Vite / Node build artifacts (Laravel public)
 # ------------------------------------
-/public/build/
-/public/hot
-/public/mix-manifest.json
-/public/js/*.js
-/public/css/*.css
+backend/public/build/
+backend/public/hot
+backend/public/mix-manifest.json
 
 # ------------------------------------
 # Docker
@@ -74,7 +82,7 @@ Thumbs.db
 *.swo
 
 # ------------------------------------
-# GitHub Actions / Deploy Keys
+# Keys
 # ------------------------------------
 *.pem
 *.key
