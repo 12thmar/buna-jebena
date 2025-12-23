@@ -63,6 +63,9 @@ jobs:
 
           SES_AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           SES_AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          
+          SMOKE_TEST_TOKEN: ${{ secrets.SMOKE_TEST_TOKEN }}
+          SMOKE_TEST_EMAIL: ${{ secrets.SMOKE_TEST_EMAIL }}
         run: |
           set -euo pipefail
 
@@ -99,6 +102,9 @@ jobs:
           ENV_FILE_CONTENT+=$'REDIS_HOST=redis\n'
           ENV_FILE_CONTENT+=$'REDIS_PASSWORD=\n'
           ENV_FILE_CONTENT+=$'REDIS_PORT=6379\n'
+
+          ENV_FILE_CONTENT+="SMOKE_TEST_TOKEN=${SMOKE_TEST_TOKEN}"$'\n\n'
+          ENV_FILE_CONTENT+="SMOKE_TEST_EMAIL=${SMOKE_TEST_EMAIL}"$'\n\n'
 
           ENV_B64=$(printf "%s" "$ENV_FILE_CONTENT" | base64 -w 0)
 

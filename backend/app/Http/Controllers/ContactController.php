@@ -39,7 +39,7 @@ class ContactController extends Controller
               . $v['message'];
 
         try {
-            $to = config('mail.contact_to', 'info@bunaroots.com');
+            $to   = config('mail.contact.to');
 
             Mail::raw($body, function ($m) use ($v, $to) {
                 $m->to($to)

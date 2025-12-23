@@ -115,4 +115,14 @@ return [
         'name' => env('MAIL_FROM_NAME', 'Example'),
     ],
 
+    'contact' => [
+        'to'   => env('MAIL_CONTACT_TO', 'info@bunaroots.com'),
+        'from' => env('MAIL_CONTACT_FROM', env('MAIL_FROM_ADDRESS')),
+    ],
+     /*
+    |--------------------------------------------------------------------------
+    | Contact / smoke test recipient
+    |--------------------------------------------------------------------------
+    */
+
 ];
