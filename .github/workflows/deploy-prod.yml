@@ -142,6 +142,17 @@ jobs:
 
           exit $WAIT_RC
 
+      - name: Debug smoke token presence (safe)
+        env:
+          SMOKE_TEST_TOKEN: ${{ secrets.SMOKE_TEST_TOKEN }}
+        run: |
+          set -euo pipefail
+          if [ -z "${SMOKE_TEST_TOKEN:-}" ]; then
+            echo "::error::SMOKE_TEST_TOKEN is empty in this run (secret not available)."
+            exit 1
+          fi
+          echo "SMOKE_TEST_TOKEN is present (length: ${#SMOKE_TEST_TOKEN})."
+
       - name: API email smoke-test
         env:
           API_BASE: https://api.bunaroots.com
