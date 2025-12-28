@@ -39,4 +39,10 @@ return [
          'token' => env('SMOKE_TEST_TOKEN'),
          'email_to' => env('SMOKE_TEST_EMAIL', 'info@bunaroots.com'),
     ],
+    'maileroo' => [
+        'sending_key' => env('MAILEROO_SENDING_KEY'),
+        'from_address' => env('MAILEROO_FROM_ADDRESS', 'info@bunaroots.com'),
+        'from_name' => env('MAILEROO_FROM_NAME', 'BunaRoots'),
+    ],
+
 ];
