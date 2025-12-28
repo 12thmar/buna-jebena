@@ -45,6 +45,7 @@ jobs:
           CACHE_DRIVER: ${{ secrets.CACHE_DRIVER }}
 
           APP_KEY: ${{ secrets.APP_KEY }}
+          APP_URL: ${{ secrets.APP_URL }}
           DB_HOST: ${{ secrets.DB_HOST }}
           DB_DATABASE: ${{ secrets.DB_DATABASE }}
           DB_PORT: ${{ secrets.DB_PORT }}
@@ -79,8 +80,8 @@ jobs:
           ENV_FILE_CONTENT=""
           ENV_FILE_CONTENT+=$'APP_ENV=production\n'
           ENV_FILE_CONTENT+=$'APP_DEBUG=false\n'
-          ENV_FILE_CONTENT+=$'APP_URL=https://api.bunaroots.com\n'
           ENV_FILE_CONTENT+="APP_KEY=${APP_KEY}"$'\n\n'
+          ENV_FILE_CONTENT+="APP_URL=${APP_URL}"$'\n\n'
 
           ENV_FILE_CONTENT+="CACHE_STORE=${CACHE_STORE}"$'\n\n'
           ENV_FILE_CONTENT+="CACHE_DRIVER=${CACHE_DRIVER}"$'\n\n'
