@@ -73,6 +73,11 @@ jobs:
           
           SMOKE_TEST_TOKEN: ${{ secrets.SMOKE_TEST_TOKEN }}
           SMOKE_TEST_EMAIL: ${{ secrets.SMOKE_TEST_EMAIL }}
+
+          NEWSLETTER_NOTIFY_TO: ${{ secrets.NEWSLETTER_NOTIFY_TO }}
+          NEWSLETTER_NOTIFY_SUBJECT_PREFIX: ${{ secrets.NEWSLETTER_NOTIFY_SUBJECT_PREFIX }}
+          NEWSLETTER_SEND_AUTOREPLY: ${{ secrets.NEWSLETTER_SEND_AUTOREPLY }} 
+          NEWSLETTER_AUTOREPLY_SUBJECT: ${{ secrets.NEWSLETTER_AUTOREPLY_SUBJECT }}
         run: |
           set -euo pipefail
 

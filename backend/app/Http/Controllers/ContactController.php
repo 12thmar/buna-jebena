@@ -41,11 +41,51 @@ class ContactController extends Controller
         try {
             $to   = config('mail.contact.to');
 
-            Mail::raw($body, function ($m) use ($v, $to) {
-                $m->to($to)
-                  ->replyTo($v['email'], $v['name'])
-                  ->subject($v['subject'] ?? 'New Contact Message');
+            $subject = sprintf(
+                '[Contact – %s] %s',
+                $request->input('category'),
+                $request->input('subject')
+            );
+
+            $html = "
+                <h2 style='margin-bottom:8px'>New Contact Request – BunaRoots</h2>
+
+                <table cellpadding='6' cellspacing='0' style='border-collapse:collapse; margin-bottom:16px'>
+                    <tr><td><strong>Category</strong></td><td>{$request->category}</td></tr>
+                    <tr><td><strong>Name</strong></td><td>{$request->name}</td></tr>
+                    <tr><td><strong>Email</strong></td><td>{$request->email}</td></tr>
+                    <tr><td><strong>Mobile</strong></td><td>{$request->mobile}</td></tr>
+                </table>
+
+                <h3 style='margin-bottom:6px'>Message</h3>
+                <div style='white-space:pre-wrap; border-left:3px solid #c56a3a; padding-left:12px; margin-bottom:16px'>
+                    {$request->message}
+                </div>
+
+                <p style='font-size:12px; color:#666'>
+                    Submitted on: " . now()->format('D, M j, Y \a\t g:i A') . "<br>
+                    Source: Contact Page
+                </p>
+            ";
+
+            $text = 
+            "New Contact Request – BunaRoots\n\n"
+            ."Category: {$request->category}\n"
+            ."Name: {$request->name}\n"
+            ."Email: {$request->email}\n"
+            ."Mobile: {$request->mobile}\n\n"
+            ."Message:\n{$request->message}\n\n"
+            ."Submitted on: ".now()->toDateTimeString()."\n"
+            ."Source: Contact Page\n";
+
+            Mail::send([], [], function ($message) use ($subject, $html, $text, $request) {
+                $message->to(config('mail.contact.to'))
+                    ->subject($subject)
+                    ->replyTo($request->email, $request->name)
+                    ->html($html)
+                    ->text($text);
             });
+
 
             Cache::put($key, $count + 1, now()->endOfDay());
 
