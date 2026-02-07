@@ -9,7 +9,7 @@ use App\Http\Controllers\NewsletterController;
 
 
 Route::get('/health', fn () => response()->json(['ok' => true]));
-Route::post('/api/contact', [ContactController::class, 'send'])
+Route::post('/contact', [ContactController::class, 'send'])
     ->middleware('throttle:5,1'); // 5 emails per minute per IP
 Route::post('/smoke/email', [SmokeTestController::class, 'email']);
 
